@@ -44,7 +44,20 @@ namespace Calculator
 
         private void FormMain_Load(object sender, EventArgs e)
         {
+            MakeResultBox();
             MakeButtons(buttons);
+        }
+
+        private void MakeResultBox()
+        {
+            RichTextBox resultBox = new RichTextBox();
+            resultBox.ReadOnly = true;
+            resultBox.SelectionAlignment = HorizontalAlignment.Right;
+            resultBox.Font = new Font("Segoe UI", 22, FontStyle.Bold);
+            resultBox.Width = this.Width - 16;
+            resultBox.Height = 120;
+            resultBox.Text = "123456";
+            this.Controls.Add(resultBox);
         }
 
         private void MakeButtons(ButtonStruct[,] buttons)
