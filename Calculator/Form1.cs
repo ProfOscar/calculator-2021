@@ -10,9 +10,15 @@ using System.Windows.Forms;
 
 namespace Calculator
 {
+
     public partial class FormMain : Form
     {
         RichTextBox resultBox;
+        int resultBoxTextSize = 24;
+
+        [System.Runtime.InteropServices.DllImport("user32.dll")]
+        static extern bool HideCaret(IntPtr hWnd);
+
 
         public struct ButtonStruct
         {
@@ -63,11 +69,31 @@ namespace Calculator
             resultBox = new RichTextBox();
             resultBox.ReadOnly = true;
             resultBox.SelectionAlignment = HorizontalAlignment.Right;
-            resultBox.Font = new Font("Segoe UI", 22, FontStyle.Bold);
+            resultBox.Font = new Font("Segoe UI", resultBoxTextSize, FontStyle.Regular);
             resultBox.Width = this.Width - 16;
             resultBox.Height = 120;
             resultBox.Text = "0";
+            resultBox.TabStop = false;
+            resultBox.GotFocus += ResultBox_HideCaretHandler;
+            resultBox.MouseDown += ResultBox_HideCaretHandler;
+            resultBox.SelectionChanged += ResultBox_HideCaretHandler;
+            resultBox.TextChanged += ResultBox_TextChanged;
             this.Controls.Add(resultBox);
+        }
+
+        private void ResultBox_TextChanged(object sender, EventArgs e)
+        {
+            HideCaret(resultBox.Handle);
+            int newSize = resultBoxTextSize - resultBox.Text.Length + 12;
+            if (newSize > 8 && newSize < resultBoxTextSize + 1)
+            {
+                resultBox.Font = new Font("Segoe UI", newSize, FontStyle.Regular);
+            }
+        }
+
+        private void ResultBox_HideCaretHandler(object sender, EventArgs e)
+        {
+            HideCaret(resultBox.Handle);
         }
 
         private void MakeButtons(ButtonStruct[,] buttons)
@@ -120,11 +146,34 @@ namespace Calculator
                         resultBox.Text += clickedButton.Text;
                     }
                 }
-                if (clickedButtonStructure.IsPlusMinusSign)
+                if (clickedButtonStructure.IsPlusMinusSign && resultBox.Text != "0")
                 {
                     resultBox.Text = resultBox.Text.Contains("-") ? resultBox.Text.Replace("-", "") : "-" + resultBox.Text;
                 }
+                else
+                {
+                    switch (clickedButtonStructure.Content)
+                    {
+                        case 'C':
+                            resultBox.Text = "0";
+                            break;
+                        case '⌫':
+                            resultBox.Text = resultBox.Text.Remove(resultBox.Text.Length - 1);
+                            if (resultBox.Text.Length == 0 || resultBox.Text == "-" || resultBox.Text == "-0")
+                            {
+                                resultBox.Text = "0";
+                            }
+                            break;
+                        default:
+                            break;
+                    }
+                }
             }
+        }
+
+        private void FormMain_Activated(object sender, EventArgs e)
+        {
+            resultBox.TabStop = true;
         }
     }
 }
