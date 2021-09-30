@@ -89,6 +89,16 @@ namespace Calculator
             {
                 resultBox.Font = new Font("Segoe UI", newSize, FontStyle.Regular);
             }
+            else if (newSize > 8)
+            {
+                resultBox.Font = new Font("Segoe UI", resultBoxTextSize, FontStyle.Regular);
+            }
+        }
+
+        private string getFormattedNumber(double number)
+        {
+            string stOut = number.ToString("N");
+            return stOut;
         }
 
         private void ResultBox_HideCaretHandler(object sender, EventArgs e)
