@@ -189,7 +189,7 @@ namespace Calculator
                             }
                             break;
                         default:
-                            manageOperators(clickedButtonStructure);
+                            if (clickedButtonStructure.IsOperator || clickedButtonStructure.IsEqualSign) manageOperators(clickedButtonStructure);
                             break;
                     }
                 }
