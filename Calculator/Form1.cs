@@ -94,6 +94,11 @@ namespace Calculator
         private void ResultBox_TextChanged(object sender, EventArgs e)
         {
             HideCaret(resultBox.Handle);
+            //double num;
+            //if (double.TryParse(resultBox.Text, out num))
+            //{
+            //    resultBox.Text = getFormattedNumber(num);
+            //}
             int newSize = resultBoxTextSize - resultBox.Text.Length + 12;
             if (newSize > 8 && newSize < resultBoxTextSize + 1)
             {
@@ -107,7 +112,10 @@ namespace Calculator
 
         private string getFormattedNumber(double number)
         {
-            string stOut = number.ToString("N");
+            //string stOut = number.ToString("N16").TrimEnd('0');
+            //if (lastButtonClicked.Content == '0') stOut += '0';
+            //if (!lastButtonClicked.IsDecimalSeparator) stOut = stOut.TrimEnd(',');
+            string stOut = number.ToString("N16").TrimEnd('0').TrimEnd(',');
             return stOut;
         }
 
@@ -159,7 +167,18 @@ namespace Calculator
                 {
                     resultBox.Text = "";
                 }
-                resultBox.Text += clickedButton.Text;
+                lastButtonClicked = clickedButtonStructure;
+                string stOut = resultBox.Text + clickedButton.Text;
+                // algoritmo che mette solo i separatori di migliaia
+                string[] parts = stOut.Split(',');
+                double intPart = double.Parse(parts[0].Replace(".",""));
+                // stOut = intPart.ToString("N0");
+                // TODO: funzione che mette i separatori di migliaia
+                if (parts.Length > 1)
+                {
+                    stOut += ',' + parts[1];
+                }
+                resultBox.Text = stOut;
             }
             else
             {
@@ -167,6 +186,7 @@ namespace Calculator
                 {
                     if (!resultBox.Text.Contains(clickedButtonStructure.Content))
                     {
+                        lastButtonClicked = clickedButtonStructure;
                         resultBox.Text += clickedButton.Text;
                     }
                 }
@@ -240,7 +260,7 @@ namespace Calculator
                     lastOperator = clickedButtonStructure.Content;
                     operand2 = 0;
                 }
-                resultBox.Text = result.ToString();
+                resultBox.Text = getFormattedNumber(result);
             }
         }
 
