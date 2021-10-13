@@ -151,7 +151,10 @@ namespace Calculator
             ButtonStruct clickedButtonStructure = (ButtonStruct)clickedButton.Tag;
             if (clickedButtonStructure.IsNumber)
             {
-
+                if (lastButtonClicked.IsEqualSign)
+                {
+                    clearAll();
+                }
                 if (resultBox.Text == "0" || lastButtonClicked.IsOperator )
                 {
                     resultBox.Text = "";
@@ -208,11 +211,12 @@ namespace Calculator
             if (lastOperator == ASCIIZERO)
             {
                 operand1 = double.Parse(resultBox.Text);
-                lastOperator = clickedButtonStructure.Content;
+                if (!clickedButtonStructure.IsEqualSign) lastOperator = clickedButtonStructure.Content;
             }
             else
             {
                 if (!lastButtonClicked.IsEqualSign) operand2 = double.Parse(resultBox.Text);
+                if (lastButtonClicked.IsEqualSign && clickedButtonStructure.IsOperator) lastOperator = ASCIIZERO;
                 switch (lastOperator)
                 {
                     case '+':
