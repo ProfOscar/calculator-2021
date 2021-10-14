@@ -94,11 +94,21 @@ namespace Calculator
         private void ResultBox_TextChanged(object sender, EventArgs e)
         {
             HideCaret(resultBox.Handle);
-            //double num;
-            //if (double.TryParse(resultBox.Text, out num))
-            //{
-            //    resultBox.Text = getFormattedNumber(num);
-            //}
+            if (lastButtonClicked.IsNumber)
+            {
+                string[] parts = resultBox.Text.Split(',');
+                string leftOutput = "";
+                for (int i = parts[0].Length - 1; i >= 0; i--)
+                {
+                    double intPart = double.Parse(parts[0]);
+                    leftOutput = intPart.ToString("N0");
+                }
+                resultBox.Text = leftOutput;
+                if (parts.Length > 1)
+                {
+                    resultBox.Text += "," + parts[1];
+                }
+            }
             int newSize = resultBoxTextSize - resultBox.Text.Length + 12;
             if (newSize > 8 && newSize < resultBoxTextSize + 1)
             {
@@ -168,17 +178,7 @@ namespace Calculator
                     resultBox.Text = "";
                 }
                 lastButtonClicked = clickedButtonStructure;
-                string stOut = resultBox.Text + clickedButton.Text;
-                // algoritmo che mette solo i separatori di migliaia
-                string[] parts = stOut.Split(',');
-                double intPart = double.Parse(parts[0].Replace(".",""));
-                // stOut = intPart.ToString("N0");
-                // TODO: funzione che mette i separatori di migliaia
-                if (parts.Length > 1)
-                {
-                    stOut += ',' + parts[1];
-                }
-                resultBox.Text = stOut;
+                resultBox.Text += clickedButton.Text;
             }
             else
             {
